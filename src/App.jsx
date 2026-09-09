@@ -16,11 +16,18 @@ function SectionHeading({ eyebrow, title, subtitle }) {
   );
 }
 
-function FeatureCard({ icon, label }) {
+function FeatureCard({ icon, label, title, text }) {
   return (
     <article className="feature-card">
       <div className="feature-card__icon">{icon}</div>
-      <p className="feature-card__label">{label}</p>
+      {title ? (
+        <>
+          <h3 className="feature-card__title">{title}</h3>
+          {text ? <p className="feature-card__text">{text}</p> : null}
+        </>
+      ) : (
+        <p className="feature-card__label">{label}</p>
+      )}
     </article>
   );
 }
@@ -212,12 +219,12 @@ function DemoBotiga() {
   const [view, setView] = useState('shop'); // 'shop' | 'cart' | 'checkout'
 
   const products = [
-    { id: 1, name: 'Samarreta Bàsica', price: 24.90, emoji: '👕', cat: 'Roba' },
-    { id: 2, name: 'Pantalons Slim', price: 49.90, emoji: '👖', cat: 'Roba' },
-    { id: 3, name: 'Jaqueta Lleugera', price: 79.90, emoji: '🧥', cat: 'Roba' },
-    { id: 4, name: 'Mocassins Clàssics', price: 89.90, emoji: '👞', cat: 'Calçat' },
-    { id: 5, name: 'Bossa de mà', price: 39.90, emoji: '👜', cat: 'Complements' },
-    { id: 6, name: 'Cinturó Cuir', price: 29.90, emoji: '🪡', cat: 'Complements' },
+    { id: 1, name: 'Samarreta Bàsica', price: 24.90, tone: '#c9d6e4', swatches: ['#1f2937', '#9ca3af', '#e5e7eb'] },
+    { id: 2, name: 'Pantalons Slim', price: 49.90, tone: '#d9e3ea', swatches: ['#111827', '#6b7280', '#d6c7a1'] },
+    { id: 3, name: 'Jaqueta Lleugera', price: 79.90, tone: '#e2e8ee', swatches: ['#1e293b', '#7c8ba1'] },
+    { id: 4, name: 'Mocassins Clàssics', price: 89.90, tone: '#e6ded1', swatches: ['#3f2d20', '#171717'] },
+    { id: 5, name: 'Bossa de mà', price: 39.90, tone: '#ece3d8', swatches: ['#6b4a2f', '#171717', '#c8a27a'] },
+    { id: 6, name: 'Cinturó Cuir', price: 29.90, tone: '#e3d9cd', swatches: ['#171717', '#6b4a2f'] },
   ];
 
   const addToCart = (product) => {
@@ -234,36 +241,93 @@ function DemoBotiga() {
 
   return (
     <div className="demo-window">
-      <header className="demo-nav demo-nav--shop">
-        <span className="demo-brand">🛍️ ModaEstil</span>
+      <div className="demo-promo-bar">Enviament gratuït a partir de 60€</div>
+      <header className="demo-nav demo-nav--shop-light">
+        <span className="demo-brand demo-brand--spaced">M O D A E S T I L</span>
         <nav className="demo-nav__links">
-          <button type="button" className={view === 'shop' ? 'demo-nav-active' : ''} onClick={() => setView('shop')}>Botiga</button>
-          <button type="button" className={view === 'cart' ? 'demo-nav-active' : ''} onClick={() => setView('cart')}>
-            Carret {cartCount > 0 && <span className="demo-cart-badge">{cartCount}</span>}
-          </button>
+          <button type="button" className={view === 'shop' ? 'demo-nav-active' : ''} onClick={() => setView('shop')}>Nova col·lecció</button>
+          <button type="button">Dones</button>
+          <button type="button">Homes</button>
+          <button type="button">Rebaixes</button>
         </nav>
+        <div className="demo-nav__icons">
+          <span aria-hidden="true">🔍</span>
+          <span aria-hidden="true">👤</span>
+          <button type="button" className="demo-nav__cart" onClick={() => setView('cart')}>
+            🛒{cartCount > 0 && <span className="demo-cart-badge">{cartCount}</span>}
+          </button>
+        </div>
       </header>
 
       {view === 'shop' && (
         <div className="demo-page-viewport">
-          <section className="demo-section demo-hero--shop">
-            <h2 className="demo-h2">Nova col·lecció tardor</h2>
-            <p className="demo-p">Roba de qualitat per al dia a dia. Enviament gratuït a partir de 60€.</p>
-          </section>
-          <div className="demo-product-grid">
-            {products.map((p) => (
-              <article key={p.id} className="demo-product-card">
-                <div className="demo-product-img">{p.emoji}</div>
-                <div className="demo-product-info">
-                  <span className="demo-product-cat">{p.cat}</span>
-                  <strong>{p.name}</strong>
-                  <span className="demo-product-price">{p.price.toFixed(2)} €</span>
+          <div className="demo-shop-layout">
+            <aside className="demo-filters">
+              <div className="demo-filters__row">
+                <strong>Filtres</strong>
+                <span className="demo-filters__clear">Netejar</span>
+              </div>
+              <div className="demo-filter-group">
+                <p className="demo-filter-group__title">Categoria</p>
+                {['Samarretes', 'Jaquetes', 'Pantalons', 'Calçat', 'Complements'].map((c) => (
+                  <label key={c} className="demo-filter-check">
+                    <input type="checkbox" readOnly checked={c === 'Jaquetes'} />
+                    <span>{c}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="demo-filter-group">
+                <p className="demo-filter-group__title">Talla</p>
+                <div className="demo-size-grid">
+                  {['XS', 'S', 'M', 'L', 'XL'].map((s) => (
+                    <span key={s} className={`demo-size-pill ${s === 'M' ? 'is-active' : ''}`}>{s}</span>
+                  ))}
                 </div>
-                <button type="button" className="demo-btn demo-btn--add" onClick={() => addToCart(p)}>
-                  + Afegir
-                </button>
-              </article>
-            ))}
+              </div>
+              <div className="demo-filter-group">
+                <p className="demo-filter-group__title">Color</p>
+                <div className="demo-color-grid">
+                  {['#171717', '#6b7280', '#c8a27a', '#3b5b8c', '#7a2e2e', '#e5e7eb'].map((c) => (
+                    <span key={c} className="demo-color-dot" style={{ background: c }} />
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            <div className="demo-product-area">
+              <div className="demo-product-area__head">
+                <span>Mostrant {products.length} de 48 productes</span>
+                <span className="demo-sort">Ordenar: Destacats ▾</span>
+              </div>
+              <div className="demo-product-grid">
+                {products.map((p) => (
+                  <article key={p.id} className="demo-product-card">
+                    <div className="demo-product-img" style={{ background: p.tone }}>
+                      <button type="button" className="demo-product-fav" aria-label="Afegir a preferits">♡</button>
+                    </div>
+                    <div className="demo-product-info">
+                      <strong>{p.name}</strong>
+                      <span className="demo-product-price">{p.price.toFixed(2)} €</span>
+                      <div className="demo-product-swatches">
+                        {p.swatches.map((c) => (
+                          <span key={c} className="demo-color-dot demo-color-dot--sm" style={{ background: c }} />
+                        ))}
+                      </div>
+                    </div>
+                    <button type="button" className="demo-btn demo-btn--add" onClick={() => addToCart(p)}>
+                      + Afegir
+                    </button>
+                  </article>
+                ))}
+              </div>
+              <div className="demo-pagination">
+                <span className="demo-page-btn">‹</span>
+                <span className="demo-page-btn is-active">1</span>
+                <span className="demo-page-btn">2</span>
+                <span className="demo-page-btn">3</span>
+                <span className="demo-page-btn">›</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -541,7 +605,13 @@ function App() {
               </div>
               <div className="feature-grid">
                 {whatWeDo.items.map((item) => (
-                  <FeatureCard key={item.label} icon={item.icon} label={item.label} />
+                  <FeatureCard
+                    key={item.title || item.label}
+                    icon={item.icon}
+                    label={item.label}
+                    title={item.title}
+                    text={item.text}
+                  />
                 ))}
               </div>
             </div>
@@ -602,22 +672,27 @@ function App() {
             </div>
           </section>
 
-          <section className="section" id="per-que-nosaltres" data-reveal>
-            <div className="container section-grid section-grid--two section-grid--reverse">
-              <div>
-                <SectionHeading eyebrow={whyUs.eyebrow} title={whyUs.title} subtitle={whyUs.description} />
-                <a href="#contacte" className="btn btn-primary section-cta">
-                  Parlem del teu projecte
-                </a>
+          <section className="section section--alt" id="per-que-nosaltres" data-reveal>
+            <div className="container">
+              <SectionHeading eyebrow={whyUs.eyebrow} title={whyUs.title} subtitle={whyUs.description} />
+              <div className="feature-grid feature-grid--why">
+                {(whyUs.items || whyUs.points || []).map((entry) => {
+                  // Compatible amb el format nou { icon, title, text }
+                  // i amb el format antic (llista de frases soltes).
+                  const item = typeof entry === 'string' ? { title: entry } : entry;
+                  return (
+                    <FeatureCard
+                      key={item.title}
+                      icon={item.icon || '✓'}
+                      title={item.title}
+                      text={item.text}
+                    />
+                  );
+                })}
               </div>
-              <div className="points-panel">
-                {whyUs.points.map((point) => (
-                  <div key={point} className="points-panel__item">
-                    <span className="points-panel__check">✓</span>
-                    <span>{point}</span>
-                  </div>
-                ))}
-              </div>
+              <a href="#contacte" className="btn btn-primary section-cta section-cta--center">
+                Parlem del teu projecte
+              </a>
             </div>
           </section>
 

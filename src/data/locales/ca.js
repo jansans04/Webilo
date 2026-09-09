@@ -40,11 +40,11 @@ export const ca = {
     title: 'Una web no ha de ser complicada.',
     description:
       "T'ajudem a tenir una presència professional a internet sense tecnicismes ni maldecaps. Ens encarreguem de tot: del disseny, del contingut i de posar-la en marxa.",
-    items: [
-      { icon: '📄', label: 'Una pàgina senzilla per començar' },
-      { icon: '🌐', label: 'Una web professional completa' },
-      { icon: '🛒', label: 'Una botiga online per vendre' },
-    ],
+  items: [
+    { icon: '📄', title: 'Una pàgina senzilla', text: 'Per començar a tenir presència a internet ja, sense complicacions.' },
+    { icon: '🌐', title: 'Una web professional', text: 'Completa, amb diverses pàgines i el disseny de la teva marca.' },
+    { icon: '🛒', title: 'Una botiga online', text: 'Per vendre els teus productes les 24 hores del dia.' },
+  ],
   },
   services: [
     {
