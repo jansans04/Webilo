@@ -346,7 +346,7 @@ function DemoBotiga() {
 }
 
 // ---------------------------------------------------------------------------
-// Service row: info card + inline demo side by side
+// Demo registry — shared by the pricing cards and the modal
 // ---------------------------------------------------------------------------
 const DEMOS = {
   aparador: DemoAparador,
@@ -354,38 +354,93 @@ const DEMOS = {
   botiga: DemoBotiga,
 };
 
-function ServiceRow({ service, reversed }) {
-  const Demo = DEMOS[service.id];
-
+// ---------------------------------------------------------------------------
+// Pricing card — the three services shown side by side, horizontally
+// ---------------------------------------------------------------------------
+function PricingCard({ service, onPreview }) {
   return (
-    <article className={`service-row ${reversed ? 'service-row--reversed' : ''}`}>
-      {/* Info */}
-      <div className="service-row__info">
-        {service.badge ? <span className="pricing-card__badge pricing-card__badge--inline">{service.badge}</span> : null}
-        <p className="pricing-card__type">{service.type}</p>
-        <h3 className="pricing-card__title">{service.name}</h3>
-        <div className="pricing-card__price">
-          <strong>{service.price}</strong>
-          <span>{service.note}</span>
-        </div>
-        <p className="pricing-card__tagline">{service.tagline}</p>
-        <ul className="pricing-card__list">
-          {service.features.map((feature) => (
-            <li key={feature}>{feature}</li>
-          ))}
-        </ul>
-        <a href="#contacte" className="btn btn-primary service-row__cta">
+    <article className={`pricing-card ${service.featured ? 'pricing-card--featured' : ''}`}>
+      {service.badge ? <span className="pricing-card__badge">{service.badge}</span> : null}
+
+      <p className="pricing-card__type">{service.type}</p>
+      <h3 className="pricing-card__title">{service.name}</h3>
+
+      <div className="pricing-card__price">
+        <strong>{service.price}</strong>
+        <span>{service.note}</span>
+      </div>
+
+      <p className="pricing-card__tagline">{service.tagline}</p>
+
+      <ul className="pricing-card__list">
+        {service.features.map((feature) => (
+          <li key={feature}>{feature}</li>
+        ))}
+      </ul>
+
+      <div className="pricing-card__actions">
+        <button
+          type="button"
+          className="btn btn-secondary pricing-card__preview"
+          onClick={() => onPreview(service.id)}
+        >
+          Veure exemple
+        </button>
+        <a href="#contacte" className="btn btn-primary pricing-card__cta">
           {service.cta}
         </a>
       </div>
+    </article>
+  );
+}
 
-      {/* Demo */}
-      <div className="service-row__demo" aria-label={`Exemple interactiu: ${service.name}`}>
-        <div className="service-row__demo-frame">
+// ---------------------------------------------------------------------------
+// Demo modal — opens the corresponding example in a window over the page
+// ---------------------------------------------------------------------------
+function DemoModal({ service, onClose }) {
+  const Demo = DEMOS[service.id];
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="demo-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Exemple: ${service.name}`}
+      onClick={onClose}
+    >
+      <div className="demo-modal__panel" onClick={(e) => e.stopPropagation()}>
+        <div className="demo-modal__header">
+          <div>
+            <p className="demo-modal__eyebrow">Exemple interactiu</p>
+            <h3>{service.name}</h3>
+          </div>
+          <button
+            type="button"
+            className="demo-modal__close"
+            onClick={onClose}
+            aria-label="Tanca l'exemple"
+          >
+            ×
+          </button>
+        </div>
+        <div className="demo-modal__viewport">
           {Demo ? <Demo /> : <div className="demo-placeholder">Exemple en preparació</div>}
         </div>
       </div>
-    </article>
+    </div>
   );
 }
 
@@ -394,8 +449,12 @@ function ServiceRow({ service, reversed }) {
 // ---------------------------------------------------------------------------
 function App() {
   const [openFaq, setOpenFaq] = useState(0);
+  const [activeDemo, setActiveDemo] = useState(null);
   const mainRef = useRef(null);
+
   const { whatWeDo, services, comparison, howItWorks, whyUs, faq, ctaFinal, contact, footer, company } = activeContent;
+
+  const activeService = activeDemo ? services.find((s) => s.id === activeDemo) : null;
 
   // Reveal on scroll
   useEffect(() => {
@@ -416,7 +475,6 @@ function App() {
   useEffect(() => {
     const main = mainRef.current;
     if (!main) return;
-
     const panels = Array.from(main.querySelectorAll('[data-page-panel]'));
     let locked = false;
 
@@ -472,9 +530,7 @@ function App() {
   return (
     <div className="page-shell">
       <Navbar onNavigate={scrollToSection} />
-
       <main className="page-scroll" ref={mainRef}>
-
         {/* Panel 1: Hero + Què fem */}
         <div className="page-panel" data-page-panel id="inici">
           <Hero />
@@ -492,22 +548,25 @@ function App() {
           </section>
         </div>
 
-        {/* Panel 2: Serveis (inline demos) */}
+        {/* Panel 2: Serveis (graella de 3 targetes + modal d'exemple) */}
         <div className="page-panel" data-page-panel id="serveis">
           <section className="section section--alt" id="serveis-contingut" data-reveal>
             <div className="container">
               <SectionHeading
                 eyebrow="Serveis"
                 title="Tres maneres de començar"
-                subtitle="Cada negoci és diferent. Escull el que s'adapta al teu moment."
+                subtitle="Cada negoci és diferent. Escull el que s'adapta al teu moment i compara'ls d'un cop d'ull."
               />
             </div>
           </section>
+
           <section className="section services-inline" data-reveal>
             <div className="container">
-              {services.map((service, i) => (
-                <ServiceRow key={service.id} service={service} reversed={i % 2 === 1} />
-              ))}
+              <div className="pricing-grid">
+                {services.map((service) => (
+                  <PricingCard key={service.id} service={service} onPreview={setActiveDemo} />
+                ))}
+              </div>
             </div>
           </section>
 
@@ -609,7 +668,6 @@ function App() {
                   <div><span>Horari</span><strong>{company.schedule}</strong></div>
                 </div>
               </div>
-
               <form className="contact-form">
                 {contact.formFields.map((field) => {
                   if (field.type === 'textarea') {
@@ -677,6 +735,10 @@ function App() {
           </footer>
         </div>
       </main>
+
+      {activeService ? (
+        <DemoModal service={activeService} onClose={() => setActiveDemo(null)} />
+      ) : null}
     </div>
   );
 }
