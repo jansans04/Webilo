@@ -1,8 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { activeContent } from './data/content';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 
+// ---------------------------------------------------------------------------
+// Section heading
+// ---------------------------------------------------------------------------
 function SectionHeading({ eyebrow, title, subtitle }) {
   return (
     <div className="section-heading">
@@ -22,284 +25,457 @@ function FeatureCard({ icon, label }) {
   );
 }
 
-function ServiceCard({ service, onOpenExample }) {
-  const exampleAvailable = service.id === 'aparador';
+// ---------------------------------------------------------------------------
+// Inline demo: Aparador Digital (landing page senzilla)
+// ---------------------------------------------------------------------------
+function DemoAparador() {
+  const sectionRefs = useRef({});
+  const viewportRef = useRef(null);
+
+  const scrollTo = (key) => {
+    sectionRefs.current[key]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
-    <article className={`pricing-card ${service.featured ? 'pricing-card--featured' : ''}`}>
-      {service.badge ? <span className="pricing-card__badge">{service.badge}</span> : null}
-      <p className="pricing-card__type">{service.type}</p>
-      <h3 className="pricing-card__title">{service.name}</h3>
-      <div className="pricing-card__price">
-        <strong>{service.price}</strong>
-        <span>{service.note}</span>
+    <div className="demo-window" ref={viewportRef}>
+      {/* Navbar */}
+      <header className="demo-nav demo-nav--light">
+        <span className="demo-brand">🌿 Floristeria Marta</span>
+        <nav className="demo-nav__links">
+          <button type="button" onClick={() => scrollTo('inici')}>Inici</button>
+          <button type="button" onClick={() => scrollTo('serveis')}>Serveis</button>
+          <button type="button" onClick={() => scrollTo('contacte')}>Contacte</button>
+        </nav>
+      </header>
+
+      {/* Hero */}
+      <section className="demo-section demo-hero--green" ref={(n) => (sectionRefs.current.inici = n)}>
+        <p className="demo-eyebrow">Floristeria a Igualada des de 1998</p>
+        <h2 className="demo-h2">Flors per a cada moment especial</h2>
+        <p className="demo-p">Ram de núvia, centres de taula, plantes d'interior i decoració floral a mida.</p>
+        <div className="demo-actions">
+          <button type="button" className="demo-btn demo-btn--primary" onClick={() => scrollTo('contacte')}>Fes una consulta</button>
+          <button type="button" className="demo-btn demo-btn--ghost" onClick={() => scrollTo('serveis')}>Veure serveis</button>
+        </div>
+      </section>
+
+      {/* Serveis */}
+      <section className="demo-section demo-section--alt" ref={(n) => (sectionRefs.current.serveis = n)}>
+        <h3 className="demo-h3">Què oferim</h3>
+        <div className="demo-cards-3">
+          {[
+            ['💐', 'Rams i centres', 'Per a casaments, aniversaris o simplement per alegrar algú.'],
+            ['🌱', 'Plantes i tests', `Selecció de plantes d'interior i exterior per a la llar o l'oficina.`],
+            ['🎁', 'Regals florals', 'Cistelles i composicions personalitzades per a qualsevol ocasió.'],
+          ].map(([icon, title, text]) => (
+            <article key={title} className="demo-card">
+              <span className="demo-card__icon">{icon}</span>
+              <strong>{title}</strong>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Contacte */}
+      <section className="demo-section demo-section--contact" ref={(n) => (sectionRefs.current.contacte = n)}>
+        <div className="demo-contact-info">
+          <h3 className="demo-h3">Troba'ns</h3>
+          <p className="demo-p">📍 Carrer Major, 14 — Igualada</p>
+          <p className="demo-p">📞 93 800 12 34</p>
+          <p className="demo-p">🕐 Dilluns–Divendres 9–20h · Dissabte 9–14h</p>
+        </div>
+        <div className="demo-map-placeholder">
+          <span>📍 Mapa</span>
+        </div>
+      </section>
+
+      <footer className="demo-footer">
+        <span>© 2025 Floristeria Marta</span>
+        <span>Exemple — Aparador Digital</span>
+      </footer>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Inline demo: Web Professional (corporativa multi-pàgina)
+// ---------------------------------------------------------------------------
+function DemoProfessional() {
+  const [page, setPage] = useState('inici');
+
+  const pages = {
+    inici: (
+      <div className="demo-page-content">
+        <section className="demo-section demo-hero--blue">
+          <p className="demo-eyebrow">Assessoria comptable i fiscal</p>
+          <h2 className="demo-h2">El teu negoci, en bones mans</h2>
+          <p className="demo-p">Més de 15 anys ajudant autònoms i pimes a portar la comptabilitat sense maldecaps.</p>
+          <button type="button" className="demo-btn demo-btn--primary" onClick={() => setPage('contacte')}>Demana cita</button>
+        </section>
+        <section className="demo-section demo-section--alt">
+          <h3 className="demo-h3">Per què confiar en nosaltres?</h3>
+          <div className="demo-cards-3">
+            {[['✓ Resposta ràpida', 'Sempre disponibles quan ens necessites.'], ['✓ Transparència', 'Sense lletres petites ni sorpreses.'], ['✓ Experiència', '+500 clients atesos des de 2008.']].map(([t, d]) => (
+              <article key={t} className="demo-card demo-card--minimal"><strong>{t}</strong><p>{d}</p></article>
+            ))}
+          </div>
+        </section>
       </div>
-      <p className="pricing-card__tagline">{service.tagline}</p>
-      <ul className="pricing-card__list">
-        {service.features.map((feature) => (
-          <li key={feature}>{feature}</li>
-        ))}
-      </ul>
-      <div className="pricing-card__meta">
-        <span>{service.technical.stack}</span>
-        <span>{service.technical.structure}</span>
-        <span>{service.technical.hosting}</span>
+    ),
+    serveis: (
+      <div className="demo-page-content">
+        <section className="demo-section">
+          <h2 className="demo-h2">Els nostres serveis</h2>
+          <div className="demo-service-list">
+            {[
+              ['📋', 'Comptabilitat mensual', 'Registre de factures, conciliació bancària i estat de comptes.'],
+              ['🧾', 'Declaracions trimestrals', 'IVA, IRPF i impostos de societats al dia.'],
+              ['👥', 'Gestió laboral', 'Nòmines, altes i baixes, contractes.'],
+              ['📊', 'Assessoria fiscal', 'Planificació per pagar menys i complir la normativa.'],
+            ].map(([icon, title, desc]) => (
+              <article key={title} className="demo-service-item">
+                <span>{icon}</span>
+                <div><strong>{title}</strong><p>{desc}</p></div>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
-      <div className="pricing-card__actions">
-        <button
-          type="button"
-          className="btn btn-secondary pricing-card__preview"
-          onClick={() => onOpenExample(service)}
-          disabled={!exampleAvailable}
-        >
-          {exampleAvailable ? 'Veure exemple' : 'Exemple en preparació'}
-        </button>
-        <a href="#contacte" className="btn btn-primary pricing-card__cta">
+    ),
+    sobre: (
+      <div className="demo-page-content">
+        <section className="demo-section">
+          <h2 className="demo-h2">Qui som</h2>
+          <p className="demo-p" style={{ maxWidth: '40ch' }}>Som un equip de tres assessors ubicats a Barcelona, especialitzats en autònoms i petites empreses. Creiem que la gestió comptable ha de ser simple i transparent.</p>
+          <div className="demo-team">
+            {[['👩', 'Anna G.', 'Comptable sènior'], ['👨', 'Marc F.', 'Assessor fiscal'], ['👩', 'Laia P.', 'Gestió laboral']].map(([ico, name, role]) => (
+              <div key={name} className="demo-team-card"><span className="demo-team-avatar">{ico}</span><strong>{name}</strong><span>{role}</span></div>
+            ))}
+          </div>
+        </section>
+      </div>
+    ),
+    contacte: (
+      <div className="demo-page-content">
+        <section className="demo-section demo-section--contact">
+          <div>
+            <h2 className="demo-h2">Parlem?</h2>
+            <p className="demo-p">📍 Carrer Balmes, 100, Barcelona</p>
+            <p className="demo-p">📞 93 400 00 01 · info@assessoria.cat</p>
+            <p className="demo-p">🕐 Dl–Dv 9–18h</p>
+          </div>
+          <div className="demo-contact-form">
+            <input type="text" placeholder="Nom i cognoms" readOnly className="demo-input" />
+            <input type="email" placeholder="Correu electrònic" readOnly className="demo-input" />
+            <textarea rows="3" placeholder="En què et podem ajudar?" readOnly className="demo-input" />
+            <button type="button" className="demo-btn demo-btn--primary">Enviar missatge</button>
+          </div>
+        </section>
+      </div>
+    ),
+  };
+
+  return (
+    <div className="demo-window">
+      <header className="demo-nav demo-nav--dark">
+        <span className="demo-brand">⚖️ Assessoria Gil</span>
+        <nav className="demo-nav__links">
+          {[['inici', 'Inici'], ['serveis', 'Serveis'], ['sobre', 'Sobre nosaltres'], ['contacte', 'Contacte']].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={page === id ? 'demo-nav-active' : ''}
+              onClick={() => setPage(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+      </header>
+      <div className="demo-page-viewport">
+        {pages[page]}
+      </div>
+      <footer className="demo-footer">
+        <span>© 2025 Assessoria Gil</span>
+        <span>Exemple — Web Professional</span>
+      </footer>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Inline demo: Botiga Online (e-commerce)
+// ---------------------------------------------------------------------------
+function DemoBotiga() {
+  const [cart, setCart] = useState([]);
+  const [view, setView] = useState('shop'); // 'shop' | 'cart' | 'checkout'
+
+  const products = [
+    { id: 1, name: 'Samarreta Bàsica', price: 24.90, emoji: '👕', cat: 'Roba' },
+    { id: 2, name: 'Pantalons Slim', price: 49.90, emoji: '👖', cat: 'Roba' },
+    { id: 3, name: 'Jaqueta Lleugera', price: 79.90, emoji: '🧥', cat: 'Roba' },
+    { id: 4, name: 'Mocassins Clàssics', price: 89.90, emoji: '👞', cat: 'Calçat' },
+    { id: 5, name: 'Bossa de mà', price: 39.90, emoji: '👜', cat: 'Complements' },
+    { id: 6, name: 'Cinturó Cuir', price: 29.90, emoji: '🪡', cat: 'Complements' },
+  ];
+
+  const addToCart = (product) => {
+    setCart((prev) => {
+      const existing = prev.find((i) => i.id === product.id);
+      return existing
+        ? prev.map((i) => i.id === product.id ? { ...i, qty: i.qty + 1 } : i)
+        : [...prev, { ...product, qty: 1 }];
+    });
+  };
+
+  const total = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
+  const cartCount = cart.reduce((acc, i) => acc + i.qty, 0);
+
+  return (
+    <div className="demo-window">
+      <header className="demo-nav demo-nav--shop">
+        <span className="demo-brand">🛍️ ModaEstil</span>
+        <nav className="demo-nav__links">
+          <button type="button" className={view === 'shop' ? 'demo-nav-active' : ''} onClick={() => setView('shop')}>Botiga</button>
+          <button type="button" className={view === 'cart' ? 'demo-nav-active' : ''} onClick={() => setView('cart')}>
+            Carret {cartCount > 0 && <span className="demo-cart-badge">{cartCount}</span>}
+          </button>
+        </nav>
+      </header>
+
+      {view === 'shop' && (
+        <div className="demo-page-viewport">
+          <section className="demo-section demo-hero--shop">
+            <h2 className="demo-h2">Nova col·lecció tardor</h2>
+            <p className="demo-p">Roba de qualitat per al dia a dia. Enviament gratuït a partir de 60€.</p>
+          </section>
+          <div className="demo-product-grid">
+            {products.map((p) => (
+              <article key={p.id} className="demo-product-card">
+                <div className="demo-product-img">{p.emoji}</div>
+                <div className="demo-product-info">
+                  <span className="demo-product-cat">{p.cat}</span>
+                  <strong>{p.name}</strong>
+                  <span className="demo-product-price">{p.price.toFixed(2)} €</span>
+                </div>
+                <button type="button" className="demo-btn demo-btn--add" onClick={() => addToCart(p)}>
+                  + Afegir
+                </button>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {view === 'cart' && (
+        <div className="demo-page-viewport">
+          <section className="demo-section">
+            <h2 className="demo-h2">El teu carret</h2>
+            {cart.length === 0 ? (
+              <p className="demo-p">Encara no has afegit cap producte.</p>
+            ) : (
+              <>
+                <div className="demo-cart-list">
+                  {cart.map((item) => (
+                    <div key={item.id} className="demo-cart-item">
+                      <span>{item.emoji} {item.name}</span>
+                      <span>×{item.qty}</span>
+                      <span>{(item.price * item.qty).toFixed(2)} €</span>
+                    </div>
+                  ))}
+                  <div className="demo-cart-total">
+                    <strong>Total</strong>
+                    <strong>{total.toFixed(2)} €</strong>
+                  </div>
+                </div>
+                <button type="button" className="demo-btn demo-btn--primary" style={{ marginTop: '1rem' }} onClick={() => setView('checkout')}>
+                  Finalitzar compra
+                </button>
+              </>
+            )}
+            <button type="button" className="demo-btn demo-btn--ghost" style={{ marginTop: '0.5rem' }} onClick={() => setView('shop')}>
+              ← Seguir comprant
+            </button>
+          </section>
+        </div>
+      )}
+
+      {view === 'checkout' && (
+        <div className="demo-page-viewport">
+          <section className="demo-section">
+            <h2 className="demo-h2">Checkout</h2>
+            <div className="demo-checkout">
+              <div className="demo-checkout-form">
+                <input type="text" placeholder="Nom i cognoms" readOnly className="demo-input" />
+                <input type="email" placeholder="Correu electrònic" readOnly className="demo-input" />
+                <input type="text" placeholder="Adreça d'enviament" readOnly className="demo-input" />
+                <div className="demo-payment-methods">
+                  <span className="demo-payment-pill">💳 Targeta</span>
+                  <span className="demo-payment-pill">📱 Bizum</span>
+                  <span className="demo-payment-pill">🅿️ PayPal</span>
+                </div>
+                <button type="button" className="demo-btn demo-btn--primary">
+                  Pagar {total.toFixed(2)} €
+                </button>
+              </div>
+              <div className="demo-checkout-summary">
+                <strong>Resum</strong>
+                {cart.map((item) => (
+                  <div key={item.id} className="demo-checkout-row">
+                    <span>{item.name} ×{item.qty}</span>
+                    <span>{(item.price * item.qty).toFixed(2)} €</span>
+                  </div>
+                ))}
+                <div className="demo-checkout-row demo-checkout-row--total">
+                  <strong>Total</strong>
+                  <strong>{total.toFixed(2)} €</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      <footer className="demo-footer">
+        <span>© 2025 ModaEstil</span>
+        <span>Exemple — Botiga Online</span>
+      </footer>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Service row: info card + inline demo side by side
+// ---------------------------------------------------------------------------
+const DEMOS = {
+  aparador: DemoAparador,
+  professional: DemoProfessional,
+  botiga: DemoBotiga,
+};
+
+function ServiceRow({ service, reversed }) {
+  const Demo = DEMOS[service.id];
+
+  return (
+    <article className={`service-row ${reversed ? 'service-row--reversed' : ''}`}>
+      {/* Info */}
+      <div className="service-row__info">
+        {service.badge ? <span className="pricing-card__badge pricing-card__badge--inline">{service.badge}</span> : null}
+        <p className="pricing-card__type">{service.type}</p>
+        <h3 className="pricing-card__title">{service.name}</h3>
+        <div className="pricing-card__price">
+          <strong>{service.price}</strong>
+          <span>{service.note}</span>
+        </div>
+        <p className="pricing-card__tagline">{service.tagline}</p>
+        <ul className="pricing-card__list">
+          {service.features.map((feature) => (
+            <li key={feature}>{feature}</li>
+          ))}
+        </ul>
+        <a href="#contacte" className="btn btn-primary service-row__cta">
           {service.cta}
         </a>
+      </div>
+
+      {/* Demo */}
+      <div className="service-row__demo" aria-label={`Exemple interactiu: ${service.name}`}>
+        <div className="service-row__demo-frame">
+          {Demo ? <Demo /> : <div className="demo-placeholder">Exemple en preparació</div>}
+        </div>
       </div>
     </article>
   );
 }
 
-function ExampleModal({ service, onClose }) {
-  const viewportRef = useRef(null);
-  const sectionRefs = useRef({});
-
-  useEffect(() => {
-    viewportRef.current?.scrollTo({ top: 0, behavior: 'auto' });
-  }, [service.id]);
-
-  useEffect(() => {
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
-
-  const scrollToSection = (key) => {
-    sectionRefs.current[key]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  return (
-    <div className="example-modal" role="dialog" aria-modal="true" aria-labelledby="example-modal-title" onClick={onClose}>
-      <div className="example-modal__panel" onClick={(event) => event.stopPropagation()}>
-        <div className="example-modal__header">
-          <div>
-            <p className="example-modal__eyebrow">Exemple interactiu</p>
-            <h3 id="example-modal-title">{service.name}</h3>
-            <p>{service.tagline}</p>
-          </div>
-          <button type="button" className="example-modal__close" onClick={onClose} aria-label="Tancar finestra">
-            ×
-          </button>
-        </div>
-
-        <div className="example-modal__viewport" ref={viewportRef}>
-          <div className="example-page">
-            <header className="example-page__nav">
-              <button type="button" className="example-page__brand" onClick={() => scrollToSection('inici')}>
-                Logotip
-              </button>
-              <div className="example-page__links">
-                <button type="button" className="example-page__link" onClick={() => scrollToSection('inici')}>
-                  Inici
-                </button>
-                <button type="button" className="example-page__link" onClick={() => scrollToSection('avantatges')}>
-                  Avantatges
-                </button>
-                <button type="button" className="example-page__link" onClick={() => scrollToSection('preus')}>
-                  Preus
-                </button>
-                <button type="button" className="example-page__link" onClick={() => scrollToSection('contacte')}>
-                  Contacte
-                </button>
-              </div>
-            </header>
-
-            <section className="example-page__section example-page__hero" ref={(node) => (sectionRefs.current.inici = node)}>
-              <h4>Impulsa el teu negoci digital</h4>
-              <p>
-                Una landing de mostra molt simple, amb barra superior fixa, scroll intern i seccions clares per veure com
-                podria quedar una web real dins d’una finestra.
-              </p>
-              <div className="example-page__actions">
-                <button type="button" className="btn btn-primary" onClick={() => scrollToSection('avantatges')}>
-                  Veure avantatges
-                </button>
-                <button type="button" className="btn btn-secondary" onClick={() => scrollToSection('contacte')}>
-                  Contactar
-                </button>
-              </div>
-            </section>
-
-            <section className="example-page__section" ref={(node) => (sectionRefs.current.avantatges = node)}>
-              <div className="example-page__section-heading">
-                <p>Per què escollir-nos?</p>
-                <h5>Una web curta i clara</h5>
-              </div>
-              <div className="example-page__cards">
-                {[
-                  ['Ràpid', 'Configura la presentació i comunica el valor del negoci de manera directa.'],
-                  ['Segur', 'Estructura neta i contingut ben presentat per generar confiança.'],
-                  ['Efectiu', 'Botons i seccions que guien l’usuari cap al contacte.'],
-                ].map(([title, text]) => (
-                  <article key={title} className="example-page__card">
-                    <strong>{title}</strong>
-                    <p>{text}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="example-page__section" ref={(node) => (sectionRefs.current.preus = node)}>
-              <div className="example-page__section-heading">
-                <p>Plans de preus</p>
-                <h5>Una comparativa molt visual</h5>
-              </div>
-              <div className="example-page__cards example-page__cards--pricing">
-                {[
-                  ['Bàsic', '9€ /mes', 'Ideal per començar.'],
-                  ['Pro', '29€ /mes', 'Perfecte per créixer.'],
-                  ['Premium', '59€ /mes', 'La versió més completa.'],
-                ].map(([title, price, text], index) => (
-                  <article key={title} className={`example-page__card ${index === 1 ? 'is-active' : ''}`}>
-                    <strong>{title}</strong>
-                    <p className="example-page__price">{price}</p>
-                    <p>{text}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="example-page__section example-page__contact" ref={(node) => (sectionRefs.current.contacte = node)}>
-              <div>
-                <span className="example-page__eyebrow">Contacte</span>
-                <h4>Demana informació i responem ràpid</h4>
-                <p>El formulari aquí és només una mostra visual del flux final, com a la landing de referència.</p>
-              </div>
-              <form className="example-page__form">
-                <input type="text" placeholder="El teu nom" />
-                <input type="email" placeholder="El teu correu electrònic" />
-                <textarea rows="4" placeholder="En què et podem ajudar?" />
-                <button type="button" className="btn btn-primary">
-                  Enviar consulta
-                </button>
-              </form>
-            </section>
-
-            <footer className="example-page__footer">
-              <span>© 2026 Demo landing</span>
-              <span>Mostra interactiva dins la finestra</span>
-            </footer>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+// ---------------------------------------------------------------------------
+// Main App
+// ---------------------------------------------------------------------------
 function App() {
-  const [activeExample, setActiveExample] = useState(null);
   const [openFaq, setOpenFaq] = useState(0);
   const mainRef = useRef(null);
   const { whatWeDo, services, comparison, howItWorks, whyUs, faq, ctaFinal, contact, footer, company } = activeContent;
 
+  // Reveal on scroll
   useEffect(() => {
     const revealTargets = document.querySelectorAll('[data-reveal]');
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          }
+          if (entry.isIntersecting) entry.target.classList.add('is-visible');
         });
       },
-      { threshold: 0.18, rootMargin: '0px 0px -10% 0px' },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
     );
-
     revealTargets.forEach((target) => observer.observe(target));
     return () => observer.disconnect();
   }, []);
 
+  // Panel-snap scroll on wheel
   useEffect(() => {
-    const panels = Array.from(mainRef.current?.querySelectorAll('[data-page-panel]') ?? []);
+    const main = mainRef.current;
+    if (!main) return;
+
+    const panels = Array.from(main.querySelectorAll('[data-page-panel]'));
     let locked = false;
 
+    const getPanelBounds = () =>
+      panels.map((p) => ({ top: p.offsetTop, bottom: p.offsetTop + p.offsetHeight }));
+
     const getCurrentIndex = () => {
-      const scrollTop = mainRef.current?.scrollTop ?? 0;
-      const probe = scrollTop + (mainRef.current?.clientHeight ?? window.innerHeight) * 0.35;
-      let currentIndex = 0;
-
-      panels.forEach((panel, index) => {
-        if (panel.offsetTop <= probe) {
-          currentIndex = index;
-        }
-      });
-
-      return currentIndex;
+      const scrollTop = main.scrollTop;
+      const mid = scrollTop + main.clientHeight * 0.4;
+      let idx = 0;
+      getPanelBounds().forEach((b, i) => { if (b.top <= mid) idx = i; });
+      return idx;
     };
 
-    const onWheel = (event) => {
-      if (activeExample || locked || panels.length === 0) {
-        return;
-      }
+    const onWheel = (e) => {
+      if (locked) return;
+      if (Math.abs(e.deltaY) < 8) return;
 
-      if (Math.abs(event.deltaY) < 10) {
-        return;
-      }
+      const idx = getCurrentIndex();
+      const scrollTop = main.scrollTop;
+      const clientH = main.clientHeight;
+      const scrollDown = e.deltaY > 0;
+      const scrollUp = !scrollDown;
 
-      const currentIndex = getCurrentIndex();
-      const currentPanel = panels[currentIndex];
-      const scrollingDown = event.deltaY > 0;
-      const scrollingUp = event.deltaY < 0;
+      // Check if we're mid-panel (more than 2px from panel boundary)
+      const panelTop = panels[idx]?.offsetTop ?? 0;
+      const panelBottom = panelTop + (panels[idx]?.offsetHeight ?? 0);
+      const nearBottom = scrollTop + clientH >= panelBottom - 4;
+      const nearTop = scrollTop <= panelTop + 4;
 
-      if (currentPanel) {
-        const maxScrollTop = currentPanel.scrollHeight - currentPanel.clientHeight;
-        const scrollTop = currentPanel.scrollTop ?? 0;
+      // Only intercept when we're AT the boundary
+      if (scrollDown && !nearBottom) return;
+      if (scrollUp && !nearTop) return;
 
-        if (scrollingDown && maxScrollTop > 1 && scrollTop < maxScrollTop - 1) {
-          return;
-        }
+      const nextIdx = Math.min(Math.max(idx + (scrollDown ? 1 : -1), 0), panels.length - 1);
+      if (nextIdx === idx) return;
 
-        if (scrollingUp && maxScrollTop > 1 && scrollTop > 1) {
-          return;
-        }
-      }
-
-      const nextIndex = Math.min(Math.max(currentIndex + (scrollingDown ? 1 : -1), 0), panels.length - 1);
-
-      if (nextIndex === currentIndex) {
-        return;
-      }
-
-      event.preventDefault();
+      e.preventDefault();
       locked = true;
-      panels[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.setTimeout(() => {
-        locked = false;
-      }, 700);
+      panels[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => { locked = false; }, 800);
     };
 
-    const mainNode = mainRef.current;
-    mainNode?.addEventListener('wheel', onWheel, { passive: false });
-    return () => mainNode?.removeEventListener('wheel', onWheel);
-  }, [activeExample]);
+    main.addEventListener('wheel', onWheel, { passive: false });
+    return () => main.removeEventListener('wheel', onWheel);
+  }, []);
 
-  const scrollToSection = (targetId) => {
-    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  const scrollToSection = useCallback((targetId) => {
+    const el = document.getElementById(targetId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   return (
     <div className="page-shell">
       <Navbar onNavigate={scrollToSection} />
 
       <main className="page-scroll" ref={mainRef}>
+
+        {/* Panel 1: Hero + Què fem */}
         <div className="page-panel" data-page-panel id="inici">
           <Hero />
           <section className="section" id="quefem" data-reveal>
@@ -316,25 +492,28 @@ function App() {
           </section>
         </div>
 
+        {/* Panel 2: Serveis (inline demos) */}
         <div className="page-panel" data-page-panel id="serveis">
           <section className="section section--alt" id="serveis-contingut" data-reveal>
             <div className="container">
               <SectionHeading
                 eyebrow="Serveis"
-                title="Tres maneres de començar segons el teu moment"
-                subtitle="Els preus són clars i el focus està en el que necessita cada negoci per començar bé."
+                title="Tres maneres de començar"
+                subtitle="Cada negoci és diferent. Escull el que s'adapta al teu moment."
               />
-              <div className="pricing-grid">
-                {services.map((service) => (
-                  <ServiceCard key={service.id} service={service} onOpenExample={setActiveExample} />
-                ))}
-              </div>
+            </div>
+          </section>
+          <section className="section services-inline" data-reveal>
+            <div className="container">
+              {services.map((service, i) => (
+                <ServiceRow key={service.id} service={service} reversed={i % 2 === 1} />
+              ))}
             </div>
           </section>
 
-          <section className="section" id="comparacio" data-reveal>
+          <section className="section section--alt" id="comparacio" data-reveal>
             <div className="container">
-              <SectionHeading eyebrow={comparison.eyebrow} title={comparison.title} subtitle="Escull segons el que vols aconseguir, no segons la tecnologia." />
+              <SectionHeading eyebrow={comparison.eyebrow} title={comparison.title} subtitle="Escull segons el que vols aconseguir." />
               <div className="comparison-grid">
                 {comparison.items.map((item, index) => (
                   <article key={item.label} className={`comparison-card comparison-card--${index + 1}`}>
@@ -347,10 +526,11 @@ function App() {
           </section>
         </div>
 
+        {/* Panel 3: Com funciona + Per què nosaltres + FAQ */}
         <div className="page-panel" data-page-panel id="com-funciona">
           <section className="section section--alt" id="com-funciona-contingut" data-reveal>
             <div className="container">
-              <SectionHeading eyebrow={howItWorks.eyebrow} title={howItWorks.title} subtitle="El procés ha de ser fàcil d’entendre i fàcil de seguir." />
+              <SectionHeading eyebrow={howItWorks.eyebrow} title={howItWorks.title} subtitle="El procés ha de ser fàcil d'entendre i fàcil de seguir." />
               <div className="steps-grid">
                 {howItWorks.steps.map((step) => (
                   <article key={step.number} className="step-card">
@@ -384,11 +564,10 @@ function App() {
 
           <section className="section" id="faq" data-reveal>
             <div className="container section-grid section-grid--two">
-              <SectionHeading eyebrow="FAQ" title="Preguntes freqüents" subtitle="Respostes curtes i útils perquè la gent no s’encalli abans d’escriure’t." />
+              <SectionHeading eyebrow="FAQ" title="Preguntes freqüents" subtitle="Respostes curtes i útils perquè la gent no s'encalli abans d'escriure't." />
               <div className="faq-list">
                 {faq.map((item, index) => {
                   const open = openFaq === index;
-
                   return (
                     <article key={item.question} className={`faq-item ${open ? 'is-open' : ''}`}>
                       <button type="button" className="faq-item__question" onClick={() => setOpenFaq(open ? -1 : index)} aria-expanded={open}>
@@ -404,6 +583,7 @@ function App() {
           </section>
         </div>
 
+        {/* Panel 4: CTA + Contacte + Footer */}
         <div className="page-panel" data-page-panel id="contacte">
           <section className="section section--cta" id="cta-final" data-reveal>
             <div className="container cta-banner">
@@ -412,7 +592,7 @@ function App() {
                 <h2 className="cta-banner__title">{ctaFinal.title}</h2>
                 <p className="cta-banner__text">{ctaFinal.subtitle}</p>
               </div>
-              <a href="#contacte" className="btn btn-ghost cta-banner__button">
+              <a href="#contacte-contingut" className="btn btn-ghost cta-banner__button">
                 {ctaFinal.cta}
               </a>
             </div>
@@ -423,22 +603,10 @@ function App() {
               <div className="contact-copy">
                 <SectionHeading eyebrow={contact.eyebrow} title={contact.title} subtitle={contact.description} />
                 <div className="contact-details">
-                  <div>
-                    <span>Telèfon</span>
-                    <strong>{company.phone}</strong>
-                  </div>
-                  <div>
-                    <span>WhatsApp</span>
-                    <strong>{company.whatsapp}</strong>
-                  </div>
-                  <div>
-                    <span>Email</span>
-                    <strong>{company.email}</strong>
-                  </div>
-                  <div>
-                    <span>Horari</span>
-                    <strong>{company.schedule}</strong>
-                  </div>
+                  <div><span>Telèfon</span><strong>{company.phone}</strong></div>
+                  <div><span>WhatsApp</span><strong>{company.whatsapp}</strong></div>
+                  <div><span>Email</span><strong>{company.email}</strong></div>
+                  <div><span>Horari</span><strong>{company.schedule}</strong></div>
                 </div>
               </div>
 
@@ -452,25 +620,19 @@ function App() {
                       </label>
                     );
                   }
-
                   if (field.type === 'select') {
                     return (
                       <label key={field.name} className="form-field form-field--full">
                         <span>{field.label}</span>
                         <select name={field.name} defaultValue="">
-                          <option value="" disabled>
-                            Tria una opció
-                          </option>
+                          <option value="" disabled>Tria una opció</option>
                           {field.options.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
+                            <option key={option} value={option}>{option}</option>
                           ))}
                         </select>
                       </label>
                     );
                   }
-
                   return (
                     <label key={field.name} className="form-field">
                       <span>{field.label}</span>
@@ -496,9 +658,10 @@ function App() {
                   <a
                     key={link.href}
                     href={link.href}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      scrollToSection(link.href.replace('#', ''));
+                    onClick={(e) => {
+                      if (!link.href.startsWith('#')) return;
+                      e.preventDefault();
+                      scrollToSection(link.href.slice(1));
                     }}
                   >
                     {link.label}
@@ -507,17 +670,13 @@ function App() {
               </nav>
               <div className="footer__links">
                 {footer.legal.map((link) => (
-                  <a key={link.href} href={link.href}>
-                    {link.label}
-                  </a>
+                  <a key={link.href} href={link.href}>{link.label}</a>
                 ))}
               </div>
             </div>
           </footer>
         </div>
       </main>
-
-      {activeExample ? <ExampleModal service={activeExample} onClose={() => setActiveExample(null)} /> : null}
     </div>
   );
 }

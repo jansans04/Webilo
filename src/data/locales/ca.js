@@ -97,13 +97,13 @@ export const ca = {
       type: 'E-commerce',
       price: '1.000 €',
       note: 'pagament únic',
-      tagline: 'Ven els teus productes 24 hores al dia, sense dependre d’un local físic.',
+      tagline: `Ven els teus productes 24 hores al dia, sense dependre d'un local físic.`,
       featured: false,
       cta: 'Vull una Botiga Online',
       features: [
         'Ven els teus productes per internet, disponible dia i nit',
         'Pagaments segurs amb targeta, Bizum i altres mètodes habituals',
-        'Gestiona productes, preus i comandes des d’un panell fàcil d’utilitzar',
+        `Gestiona productes, preus i comandes des d'un panell fàcil d'utilitzar`,
         'Preparada per créixer amb nous productes, ofertes i categories',
       ],
       technical: {
@@ -134,12 +134,12 @@ export const ca = {
       {
         number: '02',
         title: 'Preparem',
-        description: 'Preparem l’estructura, el disseny i els continguts de la web.',
+        description: `Preparem l'estructura, el disseny i els continguts de la web.`,
       },
       {
         number: '03',
         title: 'Creem',
-        description: 'Construïm la web i adaptem el contingut. T’anem informant del progrés.',
+        description: `Construïm la web i adaptem el contingut. T'anem informant del progrés.`,
       },
       {
         number: '04',
@@ -178,7 +178,7 @@ export const ca = {
     {
       question: 'Quant trigueu a fer una web?',
       answer:
-        'Depèn del servei i de la rapidesa amb què arribi el material. L’important és deixar-ho ben tancat abans de prometre terminis concrets.',
+        `Depèn del servei i de la rapidesa amb què arribi el material. L'important és deixar-ho ben tancat abans de prometre terminis concrets.`,
     },
     {
       question: 'Què necessiteu de mi?',
@@ -197,7 +197,7 @@ export const ca = {
     },
     {
       question: 'La web funciona bé en mòbil?',
-      answer: 'Sí. La web s’ha de pensar amb una estructura responsive des del principi.',
+      answer: `Sí. La web s'ha de pensar amb una estructura responsive des del principi.`,
     },
     {
       question: 'Feu webs per qualsevol tipus de negoci?',
@@ -212,7 +212,7 @@ export const ca = {
     {
       question: 'Podeu ajudar-me amb el contingut?',
       answer:
-        'Sí, com a suport d’organització i maquetació. Si després voleu redacció més avançada, s’haurà de definir com a extra.',
+        `Sí, com a suport d'organització i maquetació. Si després voleu redacció més avançada, s'haurà de definir com a extra.`,
     },
   ],
   ctaFinal: {
@@ -223,7 +223,7 @@ export const ca = {
   contact: {
     eyebrow: 'Contacte',
     title: 'Parlem?',
-    description: 'Explica’ns el teu projecte i et respondrem tan aviat com puguem.',
+    description: `Explica'ns el teu projecte i et respondrem tan aviat com puguem.`,
     formFields: [
       { name: 'nom', label: 'Nom', type: 'text', required: true, placeholder: 'El teu nom' },
       { name: 'empresa', label: 'Empresa', type: 'text', required: false, placeholder: 'El nom del teu negoci' },
@@ -247,7 +247,7 @@ export const ca = {
         label: 'Missatge',
         type: 'textarea',
         required: false,
-        placeholder: 'Explica’ns una mica el teu negoci i el que necessites...',
+        placeholder: `Explica'ns una mica el teu negoci i el que necessites...`,
       },
     ],
     submitLabel: 'Enviar consulta',
