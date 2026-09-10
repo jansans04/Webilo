@@ -3,6 +3,47 @@ import { activeContent } from './data/content';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 
+// Icones temàtiques per a la secció "Per què nosaltres", en ordre —
+// una diferent per targeta, en lloc del ✓ genèric. SVG inline, sense
+// dependències externes (evita haver d'instal·lar cap paquet nou).
+function IconIndex({ index, ...svgProps }) {
+  const paths = [
+    // Tag (preu transparent)
+    'M20.59 13.41 12 21l-9-9 8.59-8.59A2 2 0 0 1 13 3h6a2 2 0 0 1 2 2v6a2 2 0 0 1-.41 1.41ZM16 8.01 16.01 8',
+    // Sparkles (disseny)
+    'm12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3ZM19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15Z',
+    // Timer (rapidesa)
+    'M10 2h4M12 14l3-3M20 14a8 8 0 1 1-8-8 8 8 0 0 1 8 8Z',
+    // Heart (tracte proper)
+    'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z',
+    // Smartphone (responsive)
+    'M7 4h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1ZM11 18h2',
+    // Rocket (creixement)
+    'M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09ZM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 19 2c0 2.5-.5 6.5-4 9a22.35 22.35 0 0 1-3 2ZM9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5',
+    // ShieldCheck (confiança/sense sorpreses)
+    'm9 12 2 2 4-4M12 3l8 3v6c0 4.5-3 8-8 9-5-1-8-4.5-8-9V6Z',
+    // MessageCircle (comunicació directa)
+    'M21 12a8.5 8.5 0 0 1-9.5 8.4A9.4 9.4 0 0 1 8 20L3 21l1.3-3.9A8.4 8.4 0 0 1 3.5 12 8.5 8.5 0 1 1 21 12Z',
+  ];
+  const d = paths[index % paths.length];
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...svgProps}
+    >
+      <path d={d} />
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Section heading
 // ---------------------------------------------------------------------------
@@ -17,9 +58,13 @@ function SectionHeading({ eyebrow, title, subtitle }) {
 }
 
 function FeatureCard({ icon, label, title, text }) {
+  const isIconComponent = typeof icon === 'function';
+  const Icon = isIconComponent ? icon : null;
   return (
     <article className="feature-card">
-      <div className="feature-card__icon">{icon}</div>
+      <div className="feature-card__icon">
+        {Icon ? <Icon size={20} strokeWidth={2} aria-hidden="true" /> : icon}
+      </div>
       {title ? (
         <>
           <h3 className="feature-card__title">{title}</h3>
@@ -676,14 +721,14 @@ function App() {
             <div className="container">
               <SectionHeading eyebrow={whyUs.eyebrow} title={whyUs.title} subtitle={whyUs.description} />
               <div className="feature-grid feature-grid--why">
-                {(whyUs.items || whyUs.points || []).map((entry) => {
+                {(whyUs.items || whyUs.points || []).map((entry, index) => {
                   // Compatible amb el format nou { icon, title, text }
                   // i amb el format antic (llista de frases soltes).
                   const item = typeof entry === 'string' ? { title: entry } : entry;
                   return (
                     <FeatureCard
                       key={item.title}
-                      icon={item.icon || '✓'}
+                      icon={<IconIndex index={index} />}
                       title={item.title}
                       text={item.text}
                     />

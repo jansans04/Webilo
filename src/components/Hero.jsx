@@ -79,15 +79,31 @@ function PhoneMockup() {
   );
 }
 
+// Separa l'última paraula del títol (amb la puntuació final enganxada)
+// perquè es pugui destacar en cursiva + color accent, sense tocar el
+// text en si (ve tal qual de content.js / locales/ca.js).
+function splitLastWord(text) {
+  const trimmed = (text || '').trim();
+  const lastSpace = trimmed.lastIndexOf(' ');
+  if (lastSpace === -1) {
+    return { rest: '', last: trimmed };
+  }
+  return { rest: `${trimmed.slice(0, lastSpace)} `, last: trimmed.slice(lastSpace + 1) };
+}
+
 export default function Hero(props) {
   const { hero } = activeContent;
+  const { rest, last } = splitLastWord(hero.title);
 
   return (
     <section className="hero" id="inici" aria-label="Presentació" {...props}>
       <div className="container hero__inner">
         <div className="hero__content">
           <p className="hero__eyebrow">{hero.eyebrow}</p>
-          <h1 className="hero__title">{hero.title}</h1>
+          <h1 className="hero__title">
+            {rest}
+            <em className="hero__title-accent">{last}</em>
+          </h1>
           <p className="hero__subtitle">{hero.subtitle}</p>
           <div className="hero__actions">
             <a href={hero.ctaPrimary.href} className="btn btn-primary hero__btn-primary">
@@ -100,7 +116,7 @@ export default function Hero(props) {
           <div className="hero__trust">
             {hero.trust.map((item) => (
               <span key={item} className="hero__trust-item">
-                ✓ {item}
+                {item}
               </span>
             ))}
           </div>

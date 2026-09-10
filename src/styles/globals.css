@@ -32,6 +32,11 @@ html {
   scroll-behavior: smooth;
 }
 
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -369,6 +374,11 @@ img {
   letter-spacing: -0.05em;
 }
 
+.hero__title-accent {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
 .hero__subtitle {
   margin: 1.4rem 0 0;
   max-width: 58ch;
@@ -391,13 +401,29 @@ img {
   margin-top: 1.4rem;
 }
 
-.hero__trust-item {
-  padding: 0.55rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(217, 210, 198, 0.9);
+.hero__trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
   color: var(--color-text-2);
   font-size: 0.92rem;
+}
+
+.hero__trust-item {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-2);
+  font-size: 0.92rem;
+}
+
+.hero__trust-item:not(:last-child)::after {
+  content: '·';
+  margin-left: 0.5rem;
+  color: var(--color-text-3);
 }
 
 .hero__visual {
@@ -640,7 +666,7 @@ img {
   background: var(--color-white);
   border: none;
   box-shadow: var(--shadow-soft);
-  border-radius: var(--radius-xl);
+  border-radius: 20px;
   transition: transform var(--transition), box-shadow var(--transition);
 }
 
@@ -688,7 +714,7 @@ img {
   padding: 1.6rem 1.5rem;
   background: var(--color-white);
   border: 1px solid rgba(197, 221, 230, 0.65);
-  border-radius: 28px;
+  border-radius: 20px;
   box-shadow: var(--shadow-soft);
   transition: transform var(--transition), box-shadow var(--transition);
 }
@@ -696,7 +722,7 @@ img {
 .pricing-card--featured {
   background: var(--color-white);
   border: 1.5px solid var(--color-accent);
-  transform: translateY(-0.7rem);
+  transform: none;
   box-shadow: var(--shadow-pop);
 }
 
